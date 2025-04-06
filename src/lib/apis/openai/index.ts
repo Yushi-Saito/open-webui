@@ -1,4 +1,12 @@
-import { OPENAI_API_BASE_URL, WEBUI_API_BASE_URL, WEBUI_BASE_URL } from '$lib/constants';
+import {
+  OPENAI_API_BASE_URL,
+  WEBUI_API_BASE_URL,
+  WEBUI_BASE_URL,
+  AZURE_OPENAI_ENDPOINT,
+  AZURE_OPENAI_API_VERSION,
+  AZURE_OPENAI_API_KEY,
+  AZURE_OPENAI_DEPLOYMENT_NAME
+} from '$lib/constants';
 
 export const getOpenAIConfig = async (token: string = '') => {
 	let error = null;
@@ -332,16 +340,19 @@ export const verifyOpenAIConnection = async (
 export const chatCompletion = async (
 	token: string = '',
 	body: object,
-	url: string = `${WEBUI_BASE_URL}/api`
+	url: string = `${AZURE_OPENAI_ENDPOINT}`
 ): Promise<[Response | null, AbortController]> => {
 	const controller = new AbortController();
 	let error = null;
 
-	const res = await fetch(`${url}/chat/completions`, {
+	// Azure OpenAI APIのエンドポイント形式に変換
+	const apiUrl = `${url}/openai/deployments/${AZURE_OPENAI_DEPLOYMENT_NAME}/chat/completions?api-version=${AZURE_OPENAI_API_VERSION}`;
+	
+	const res = await fetch(apiUrl, {
 		signal: controller.signal,
 		method: 'POST',
 		headers: {
-			Authorization: `Bearer ${token}`,
+			'api-key': AZURE_OPENAI_API_KEY,
 			'Content-Type': 'application/json'
 		},
 		body: JSON.stringify(body)
@@ -361,14 +372,17 @@ export const chatCompletion = async (
 export const generateOpenAIChatCompletion = async (
 	token: string = '',
 	body: object,
-	url: string = `${WEBUI_BASE_URL}/api`
+	url: string = `${AZURE_OPENAI_ENDPOINT}`
 ) => {
 	let error = null;
 
-	const res = await fetch(`${url}/chat/completions`, {
+	// Azure OpenAI APIのエンドポイント形式に変換
+	const apiUrl = `${url}/openai/deployments/${AZURE_OPENAI_DEPLOYMENT_NAME}/chat/completions?api-version=${AZURE_OPENAI_API_VERSION}`;
+
+	const res = await fetch(apiUrl, {
 		method: 'POST',
 		headers: {
-			Authorization: `Bearer ${token}`,
+			'api-key': AZURE_OPENAI_API_KEY,
 			'Content-Type': 'application/json'
 		},
 		body: JSON.stringify(body)

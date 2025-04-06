@@ -8,8 +8,40 @@ import emojiShortCodes from '$lib/emoji-shortcodes.json';
 
 // Backend
 export const WEBUI_NAME = writable(APP_NAME);
-export const config: Writable<Config | undefined> = writable(undefined);
-export const user: Writable<SessionUser | undefined> = writable(undefined);
+// configストアの初期値を設定
+export const config: Writable<Config | undefined> = writable({
+  status: true,
+  name: APP_NAME,
+  version: '1.0.0',
+  default_locale: 'en-US',
+  default_models: 'gpt-4',
+  default_prompt_suggestions: [],
+  features: {
+    auth: false,
+    auth_trusted_header: false,
+    enable_api_key: true,
+    enable_signup: false,
+    enable_login_form: false,
+    enable_web_search: false,
+    enable_google_drive_integration: false,
+    enable_onedrive_integration: false,
+    enable_image_generation: false,
+    enable_admin_export: false,
+    enable_admin_chat_access: false,
+    enable_community_sharing: false,
+    enable_autocomplete_generation: false
+  },
+  oauth: {
+    providers: {}
+  }
+});
+export const user: Writable<SessionUser | undefined> = writable({
+  id: 'local-user',
+  email: 'user@local',
+  name: 'Local User',
+  role: 'admin',
+  profile_image_url: '/user.png'
+});
 
 // Electron App
 export const isApp = writable(false);
@@ -28,7 +60,7 @@ export const USAGE_POOL: Writable<null | string[]> = writable(null);
 export const theme = writable('system');
 
 export const shortCodesToEmojis = writable(
-	Object.entries(emojiShortCodes).reduce((acc, [key, value]) => {
+	Object.entries(emojiShortCodes).reduce((acc: Record<string, string>, [key, value]) => {
 		if (typeof value === 'string') {
 			acc[value] = key;
 		} else {
@@ -38,7 +70,7 @@ export const shortCodesToEmojis = writable(
 		}
 
 		return acc;
-	}, {})
+	}, {} as Record<string, string>)
 );
 
 export const TTSWorker = writable(null);
@@ -62,7 +94,20 @@ export const toolServers = writable([]);
 
 export const banners: Writable<Banner[]> = writable([]);
 
-export const settings: Writable<Settings> = writable({});
+export const settings: Writable<Settings> = writable({
+	chatDirection: 'LTR',
+	models: [],
+	conversationMode: true,
+	speechAutoSend: false,
+	responseAutoPlayback: false,
+	showUsername: true,
+	notificationEnabled: true,
+	splitLargeDeltas: true,
+	ctrlEnterToSend: true,
+	options: {
+		stop: false
+	}
+});
 
 export const showSidebar = writable(false);
 export const showSettings = writable(false);
